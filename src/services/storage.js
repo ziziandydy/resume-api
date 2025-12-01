@@ -6,50 +6,50 @@ const TTL_MS = 14 * 24 * 60 * 60 * 1000; // 14 days
 // Check if running in serverless environment (Vercel, etc.)
 const isServerless = process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME || process.env.VERCEL_ENV;
 
-// In-memory storage for serverless environments
-let memoryStorage = null;
-
 if (isServerless) {
-  // Use in-memory storage for serverless
-  memoryStorage = new Map();
-  
-  const saveFile = (id, content, extension) => {
-    const key = `${id}.${extension}`;
-    memoryStorage.set(key, {
-      content: content,
-      timestamp: Date.now(),
-      extension: extension
-    });
-    
-    // Clean up old entries periodically
-    if (memoryStorage.size > 1000) {
-      const now = Date.now();
-      for (const [key, value] of memoryStorage.entries()) {
-        if (now - value.timestamp > TTL_MS) {
-          memoryStorage.delete(key);
-        }
-      }
+  // Use Vercel Blob storage for serverless
+  const { put, head } = require('@vercel/blob');
+
+  const saveFile = async (id, content, extension) => {
+    const filename = `${id}.${extension}`;
+
+    try {
+      const blob = await put(filename, content, {
+        access: 'public',
+        addRandomSuffix: false
+      });
+
+      return blob.url;
+    } catch (error) {
+      console.error('Error saving to Vercel Blob:', error);
+      throw error;
     }
-    
-    return key;
   };
 
-  const getFile = (id, extension) => {
-    const key = `${id}.${extension}`;
-    const entry = memoryStorage.get(key);
-    
-    if (!entry) {
+  const getFile = async (id, extension) => {
+    const filename = `${id}.${extension}`;
+
+    try {
+      // Check if blob exists by getting its metadata
+      const blobData = await head(`https://${process.env.BLOB_STORE_ID || 'blob.vercel-storage.com'}/${filename}`);
+
+      if (!blobData) {
+        return null;
+      }
+
+      // Check TTL
+      const uploadedAt = new Date(blobData.uploadedAt).getTime();
+      const now = Date.now();
+
+      if (now - uploadedAt > TTL_MS) {
+        return null;
+      }
+
+      return blobData.url;
+    } catch (error) {
+      console.error('Error getting from Vercel Blob:', error);
       return null;
     }
-
-    // Check TTL
-    const now = Date.now();
-    if (now - entry.timestamp > TTL_MS) {
-      memoryStorage.delete(key);
-      return null;
-    }
-
-    return entry.content;
   };
 
   module.exports = {

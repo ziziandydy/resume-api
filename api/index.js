@@ -25,13 +25,13 @@ app.post('/resume', async (req, res) => {
 
         // Generate HTML
         const html = generator.generateHtml(data);
-        storage.saveFile(id, html, 'html');
+        await storage.saveFile(id, html, 'html');
 
         // Generate PDF (with error handling for serverless environments)
         let pdfBuffer = null;
         try {
             pdfBuffer = await generator.generatePdf(html);
-            storage.saveFile(id, pdfBuffer, 'pdf');
+            await storage.saveFile(id, pdfBuffer, 'pdf');
         } catch (pdfError) {
             console.error('PDF generation failed:', pdfError);
             // Continue without PDF if generation fails
@@ -53,48 +53,68 @@ app.post('/resume', async (req, res) => {
     } catch (error) {
         console.error('Error generating resume:', error);
         console.error('Error stack:', error.stack);
-        res.status(500).json({ 
+        res.status(500).json({
             error: 'Internal server error',
-            message: error.message 
+            message: error.message
         });
     }
 });
 
 // GET /resume/:id
-app.get('/resume/:id', (req, res) => {
+app.get('/resume/:id', async (req, res) => {
     const { id } = req.params;
     const { format } = req.query;
 
-    if (format === 'pdf') {
-        const fileData = storage.getFile(id, 'pdf');
-        if (!fileData) {
-            return res.status(404).send('Resume not found or expired');
-        }
-        res.contentType('application/pdf');
-        // In serverless, fileData is a Buffer, in local it's a file path
-        if (Buffer.isBuffer(fileData)) {
+    try {
+        if (format === 'pdf') {
+            const fileData = await storage.getFile(id, 'pdf');
+            if (!fileData) {
+                return res.status(404).send('Resume not found or expired');
+            }
+
+            // If it's a URL (Vercel Blob), redirect to it
+            if (typeof fileData === 'string' && fileData.startsWith('http')) {
+                return res.redirect(fileData);
+            }
+
+            // If it's a local file path
+            if (typeof fileData === 'string' && fileData.includes('/')) {
+                const path = require('path');
+                res.contentType('application/pdf');
+                return res.sendFile(path.resolve(fileData));
+            }
+
+            // If it's a buffer
+            res.contentType('application/pdf');
             res.send(fileData);
-        } else if (typeof fileData === 'string' && fileData.includes('/')) {
-            // Local file path
-            const path = require('path');
-            res.sendFile(path.resolve(fileData));
         } else {
+            const fileData = await storage.getFile(id, 'html');
+            if (!fileData) {
+                return res.status(404).send('Resume not found or expired');
+            }
+
+            // If it's a URL (Vercel Blob), fetch and serve the content
+            if (typeof fileData === 'string' && fileData.startsWith('http')) {
+                const response = await fetch(fileData);
+                const html = await response.text();
+                res.contentType('text/html');
+                return res.send(html);
+            }
+
+            // If it's a local file path
+            if (typeof fileData === 'string' && fileData.includes('/')) {
+                const path = require('path');
+                res.contentType('text/html');
+                return res.sendFile(path.resolve(fileData));
+            }
+
+            // If it's already the content
+            res.contentType('text/html');
             res.send(fileData);
         }
-    } else {
-        const fileData = storage.getFile(id, 'html');
-        if (!fileData) {
-            return res.status(404).send('Resume not found or expired');
-        }
-        res.contentType('text/html');
-        // In serverless, fileData is a string, in local it's a file path
-        if (typeof fileData === 'string' && fileData.includes('/')) {
-            // Local file path
-            const path = require('path');
-            res.sendFile(path.resolve(fileData));
-        } else {
-            res.send(fileData);
-        }
+    } catch (error) {
+        console.error('Error retrieving resume:', error);
+        res.status(500).json({ error: 'Internal server error', message: error.message });
     }
 });
 
@@ -102,9 +122,9 @@ app.get('/resume/:id', (req, res) => {
 app.use((err, req, res, next) => {
     console.error('Unhandled error:', err);
     console.error('Error stack:', err.stack);
-    res.status(500).json({ 
+    res.status(500).json({
         error: 'Internal server error',
-        message: err.message 
+        message: err.message
     });
 });
 
