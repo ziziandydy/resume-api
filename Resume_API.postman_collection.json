@@ -1,0 +1,113 @@
+{
+	"info": {
+		"name": "Resume API",
+		"description": "API collection for testing Resume API endpoints",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Create Resume",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "[\n    {\n        \"$schema\": \"https://raw.githubusercontent.com/jsonresume/resume-schema/v1.0.0/schema.json\",\n        \"basics\": {\n            \"name\": \"Tu Chin Lun\",\n            \"label\": \"Product Manager - Open API\",\n            \"email\": \"ziziandydy@gmail.com\",\n            \"phone\": \"+886 929 111 255\",\n            \"url\": \"https://andismtu.com\",\n            \"summary\": \"Product Manager with 7+ years of experience leading cross-functional teams and delivering complex digital products and platform solutions, including API integration and AI-driven features. Proven expertise in managing product roadmaps, improving process efficiency, and enhancing partner and customer experiences. Skilled in Agile methodologies and data-driven decision-making to drive impactful B2B2C API products in dynamic industries.\",\n            \"location\": {\n                \"region\": \"Taiwan\"\n            },\n            \"profiles\": [\n                {\n                    \"network\": \"LinkedIn\",\n                    \"username\": \"\",\n                    \"url\": \"https://www.linkedin.com/in/anderson-tu/\"\n                }\n            ]\n        },\n        \"work\": [\n            {\n                \"name\": \"Groundhog Inc.\",\n                \"position\": \"Lead of PM & Product Manager\",\n                \"startDate\": \"2020-11\",\n                \"summary\": \"Led product development and delivery of programmatic advertising platforms with extensive API integration and data automation capabilities across multiple countries.\",\n                \"highlights\": [\n                    \"Directed end-to-end delivery of in-house DSP and DMP platforms integrating programmatic supply with multiple SSPs, expanding data sources for precision audience targeting, delivering 30%+ lift in campaign performance.\",\n                    \"Spearheaded design and implementation of AI-driven audience segmentation and targeting features, increasing operational efficiency by 40% through rapid prototyping and cross-team collaboration.\",\n                    \"Implemented a no-code AI-powered automated reporting management system with API integrations, reducing manual workload by 90% and achieving 99.9% on-time report delivery.\",\n                    \"Collaborated with technical teams and external partners to ensure scalable and secure API management, data integrity, and seamless platform evolution to maximize value for partners.\"\n                ]\n            },\n            {\n                \"name\": \"BuckChaf\",\n                \"position\": \"Project Manager\",\n                \"startDate\": \"2019-10\",\n                \"endDate\": \"2020-09\",\n                \"summary\": \"Managed blockchain-based product development including API-integrated e-commerce and crypto lending features focused on user experience and risk management.\",\n                \"highlights\": [\n                    \"Co-developed two ERC20 crypto wallet e-commerce platforms with standardized development processes to optimize delivery efficiency by 20%.\",\n                    \"Launched Telegram-integrated lending bot providing 15% APY managing assets over $10K, incorporating automated trading and security controls.\",\n                    \"Collaborated with engineers and stakeholders to define product requirements, prioritize features, and deliver secure API integrations in an Agile environment.\"\n                ]\n            },\n            {\n                \"name\": \"CASETEK LTD\",\n                \"position\": \"Program Manager\",\n                \"startDate\": \"2018-04\",\n                \"endDate\": \"2019-07\",\n                \"summary\": \"Led multiple manufacturing and research projects, managing cross-functional teams and optimizing quality and workflow efficiency.\",\n                \"highlights\": [\n                    \"Headed overall project management for 7 manufacturing projects and 2 research initiatives, leading 4 junior managers coordinating end-to-end execution.\",\n                    \"Implemented quality management systems achieving zero scrap rate and 90% yield rate, and set company records for rapid project ramp-up.\",\n                    \"Applied Agile principles and team leadership to meet production goals on time and within budget.\"\n                ]\n            }\n        ],\n        \"education\": [\n            {\n                \"institution\": \"National Taiwan Normal University\",\n                \"area\": \"Physics\",\n                \"studyType\": \"Bachelor\",\n                \"startDate\": \"2011-09\",\n                \"endDate\": \"2016-06\"\n            }\n        ],\n        \"skills\": [\n            {\n                \"name\": \"Product Management\",\n                \"level\": \"Advanced\",\n                \"keywords\": [\n                    \"API Management\",\n                    \"Product Roadmap\",\n                    \"Business Requirements\",\n                    \"Agile/Scrum\",\n                    \"Stakeholder Communication\",\n                    \"Cross-Functional Leadership\",\n                    \"API Strategy\",\n                    \"Data-Driven Decisions\"\n                ]\n            },\n            {\n                \"name\": \"API Integration & Delivery\",\n                \"level\": \"Advanced\",\n                \"keywords\": [\n                    \"Open APIs\",\n                    \"API Security\",\n                    \"Version Control\",\n                    \"Release Management\",\n                    \"Partner Engagement\",\n                    \"Technical Collaboration\"\n                ]\n            },\n            {\n                \"name\": \"Data Analysis & Automation\",\n                \"level\": \"Advanced\",\n                \"keywords\": [\n                    \"KPI Analysis\",\n                    \"A/B Testing\",\n                    \"Data Visualization\",\n                    \"Automated Reporting\",\n                    \"AI/ML Tools\",\n                    \"Real-Time Bidding\"\n                ]\n            },\n            {\n                \"name\": \"Technical Tools & Platforms\",\n                \"level\": \"Intermediate\",\n                \"keywords\": [\n                    \"GitLab\",\n                    \"Figma\",\n                    \"Grafana\",\n                    \"Miro\",\n                    \"Agile Tools\",\n                    \"Blockchain\",\n                    \"Make Automation\"\n                ]\n            }\n        ]\n    }\n]"
+				},
+				"url": {
+					"raw": "http://localhost:3000/resume",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"resume"
+					]
+				},
+				"description": "創建新的履歷，返回履歷 ID 和 URL"
+			},
+			"response": []
+		},
+		{
+			"name": "Get Resume HTML",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/resume/:id",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"resume",
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "{{resume_id}}",
+							"description": "從 Create Resume 回應中取得的 ID"
+						}
+					]
+				},
+				"description": "取得履歷的 HTML 版本。請先執行 Create Resume 取得 ID，或手動設定 :id 變數"
+			},
+			"response": []
+		},
+		{
+			"name": "Get Resume PDF",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/resume/:id?format=pdf",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"resume",
+						":id"
+					],
+					"query": [
+						{
+							"key": "format",
+							"value": "pdf"
+						}
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "{{resume_id}}",
+							"description": "從 Create Resume 回應中取得的 ID"
+						}
+					]
+				},
+				"description": "取得履歷的 PDF 版本。請先執行 Create Resume 取得 ID，或手動設定 :id 變數"
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:3000",
+			"type": "string"
+		},
+		{
+			"key": "resume_id",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
+
