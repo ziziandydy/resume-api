@@ -8,7 +8,7 @@ const isServerless = process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME 
 
 if (isServerless) {
   // Use Vercel Blob storage for serverless
-  const { put, head } = require('@vercel/blob');
+  const { put, list } = require('@vercel/blob');
 
   const saveFile = async (id, content, extension) => {
     const filename = `${id}.${extension}`;
@@ -30,22 +30,24 @@ if (isServerless) {
     const filename = `${id}.${extension}`;
 
     try {
-      // Check if blob exists by getting its metadata
-      const blobData = await head(`https://${process.env.BLOB_STORE_ID || 'blob.vercel-storage.com'}/${filename}`);
+      // Use list to find the blob
+      const { blobs } = await list({ prefix: filename });
 
-      if (!blobData) {
+      if (!blobs || blobs.length === 0) {
         return null;
       }
 
+      const blob = blobs[0];
+
       // Check TTL
-      const uploadedAt = new Date(blobData.uploadedAt).getTime();
+      const uploadedAt = new Date(blob.uploadedAt).getTime();
       const now = Date.now();
 
       if (now - uploadedAt > TTL_MS) {
         return null;
       }
 
-      return blobData.url;
+      return blob.url;
     } catch (error) {
       console.error('Error getting from Vercel Blob:', error);
       return null;
