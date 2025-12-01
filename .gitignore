@@ -1,14 +1,15 @@
 # Dependencies
 node_modules/
-package-lock.json
 
 # Storage files (generated resumes)
 storage/*.html
 storage/*.pdf
+storage/.gitkeep
 
 # Environment variables
 .env
 .env.local
+.env*.local
 
 # OS files
 .DS_Store
@@ -27,4 +28,7 @@ npm-debug.log*
 # Temporary files
 *.tmp
 .cache/
+
+# Vercel
+.vercel
 

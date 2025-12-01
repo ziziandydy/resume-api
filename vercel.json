@@ -1,0 +1,25 @@
+{
+  "version": 2,
+  "routes": [
+    {
+      "src": "/resume",
+      "methods": [
+        "POST"
+      ],
+      "dest": "/api/index.js"
+    },
+    {
+      "src": "/resume/(.*)",
+      "methods": [
+        "GET"
+      ],
+      "dest": "/api/index.js"
+    }
+  ],
+  "functions": {
+    "api/index.js": {
+      "maxDuration": 30,
+      "memory": 1024
+    }
+  }
+}
