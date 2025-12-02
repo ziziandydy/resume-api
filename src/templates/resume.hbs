@@ -17,6 +17,11 @@
       color: #2c2c2c;
     }
 
+    @page {
+      size: A4;
+      margin: 0;
+    }
+
     body {
       margin: 0;
       padding: 0;
@@ -207,13 +212,11 @@
     }
 
     .skills-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 1.75rem;
+      display: block;
     }
 
     .skill-category {
-      margin-bottom: 1.25rem;
+      margin-bottom: 1.5rem;
     }
 
     .skill-name {
@@ -246,7 +249,7 @@
         <div><a href="{{basics.url}}" target="_blank" rel="noopener noreferrer">{{removeProtocol basics.url}}</a></div>
         {{/if}}
         {{#each basics.profiles}}
-        <div><a href="{{this.url}}" target="_blank" rel="noopener noreferrer">{{this.url}}</a></div>
+        <div><a href="{{this.url}}" target="_blank" rel="noopener noreferrer">{{removeProtocol this.url}}</a></div>
         {{/each}}
       </div>
     </header>
