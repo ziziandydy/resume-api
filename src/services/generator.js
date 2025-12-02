@@ -59,9 +59,9 @@ const generatePdf = async (html) => {
             format: 'A4',
             printBackground: true,
             margin: {
-                top: '0px',
+                top: '20mm',
                 right: '0px',
-                bottom: '0px',
+                bottom: '20mm',
                 left: '0px'
             }
         });

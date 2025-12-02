@@ -246,21 +246,21 @@
         <div><a href="{{basics.url}}" target="_blank" rel="noopener noreferrer">{{removeProtocol basics.url}}</a></div>
         {{/if}}
         {{#each basics.profiles}}
-        <div><a href="{{this.url}}" target="_blank" rel="noopener noreferrer">{{this.network}}</a></div>
+        <div><a href="{{this.url}}" target="_blank" rel="noopener noreferrer">{{this.url}}</a></div>
         {{/each}}
       </div>
     </header>
 
     {{#if basics.summary}}
     <section class="section">
-      <h2 class="section-title">Profile</h2>
+      <h2 class="section-title">Summary</h2>
       <p class="summary-text">{{basics.summary}}</p>
     </section>
     {{/if}}
 
     {{#if work.length}}
     <section class="section">
-      <h2 class="section-title">Experience</h2>
+      <h2 class="section-title">Work Experience</h2>
       {{#each work}}
       <div class="item">
         <div class="item-header">
