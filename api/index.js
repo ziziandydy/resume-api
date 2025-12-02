@@ -35,7 +35,16 @@ app.post('/resume', async (req, res) => {
         } catch (pdfError) {
             console.error('PDF generation failed:', pdfError);
             // Continue without PDF if generation fails
-            // The HTML version will still be available
+        }
+
+        // Generate DOCX
+        let docxBuffer = null;
+        try {
+            docxBuffer = await generator.generateDocx(data);
+            await storage.saveFile(id, docxBuffer, 'docx');
+        } catch (docxError) {
+            console.error('DOCX generation failed:', docxError);
+            // Continue without DOCX if generation fails
         }
 
         const response = [
@@ -44,8 +53,10 @@ app.post('/resume', async (req, res) => {
                 theme: 'consultant-polished',
                 viewUrl: `/resume/${id}`,
                 pdfUrl: `/resume/${id}?format=pdf`,
+                docxUrl: `/resume/${id}?format=docx`,
                 html: html,
-                pdfAvailable: pdfBuffer !== null
+                pdfAvailable: pdfBuffer !== null,
+                docxAvailable: docxBuffer !== null
             }
         ];
 
@@ -86,6 +97,27 @@ app.get('/resume/:id', async (req, res) => {
 
             // If it's a buffer
             res.contentType('application/pdf');
+            res.send(fileData);
+        } else if (format === 'docx') {
+            const fileData = await storage.getFile(id, 'docx');
+            if (!fileData) {
+                return res.status(404).send('Resume not found or expired');
+            }
+
+            // If it's a URL (Vercel Blob), redirect to it
+            if (typeof fileData === 'string' && fileData.startsWith('http')) {
+                return res.redirect(fileData);
+            }
+
+            // If it's a local file path
+            if (typeof fileData === 'string' && fileData.includes('/')) {
+                const path = require('path');
+                res.contentType('application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+                return res.sendFile(path.resolve(fileData));
+            }
+
+            // If it's a buffer
+            res.contentType('application/vnd.openxmlformats-officedocument.wordprocessingml.document');
             res.send(fileData);
         } else {
             const fileData = await storage.getFile(id, 'html');

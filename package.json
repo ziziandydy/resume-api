@@ -16,6 +16,7 @@
     "@vercel/blob": "^2.0.0",
     "body-parser": "^2.2.1",
     "cors": "^2.8.5",
+    "docx": "^9.5.1",
     "express": "^5.1.0",
     "handlebars": "^4.7.8",
     "puppeteer-core": "^24.31.0",
