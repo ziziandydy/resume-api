@@ -77,7 +77,7 @@ const generatePdf = async (html) => {
 };
 
 const generateDocx = async (resumeData) => {
-    const { Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType, UnderlineType, convertInchesToTwip } = require('docx');
+    const { Document, Packer, Paragraph, TextRun, HeadingLevel, convertInchesToTwip } = require('docx');
 
     const children = [];
 
@@ -92,11 +92,24 @@ const generateDocx = async (resumeData) => {
         return url.replace(/^https?:\/\//, '');
     };
 
+    // Font settings - Roboto, black text, 11pt
+    const bodyFont = { name: 'Roboto', size: 22 }; // 11pt = 22 half-points
+    const headingFont = { name: 'Roboto', size: 26 }; // 13pt = 26 half-points
+    const nameFont = { name: 'Roboto', size: 36 }; // 18pt = 36 half-points
+    const textColor = '000000'; // Black
+
     // Header - Name
     children.push(
         new Paragraph({
-            text: resumeData.basics.name,
-            heading: HeadingLevel.HEADING_1,
+            children: [
+                new TextRun({
+                    text: resumeData.basics.name,
+                    font: nameFont.name,
+                    size: nameFont.size,
+                    bold: true,
+                    color: textColor,
+                })
+            ],
             spacing: { after: 100 },
         })
     );
@@ -105,7 +118,14 @@ const generateDocx = async (resumeData) => {
     if (resumeData.basics.label) {
         children.push(
             new Paragraph({
-                text: resumeData.basics.label,
+                children: [
+                    new TextRun({
+                        text: resumeData.basics.label,
+                        font: bodyFont.name,
+                        size: bodyFont.size,
+                        color: textColor,
+                    })
+                ],
                 spacing: { after: 200 },
             })
         );
@@ -125,7 +145,14 @@ const generateDocx = async (resumeData) => {
     if (contactParts.length > 0) {
         children.push(
             new Paragraph({
-                text: contactParts.join(' | '),
+                children: [
+                    new TextRun({
+                        text: contactParts.join(' | '),
+                        font: bodyFont.name,
+                        size: bodyFont.size,
+                        color: textColor,
+                    })
+                ],
                 spacing: { after: 400 },
             })
         );
@@ -135,14 +162,28 @@ const generateDocx = async (resumeData) => {
     if (resumeData.basics.summary) {
         children.push(
             new Paragraph({
-                text: 'Summary',
-                heading: HeadingLevel.HEADING_2,
+                children: [
+                    new TextRun({
+                        text: 'Summary',
+                        font: headingFont.name,
+                        size: headingFont.size,
+                        bold: true,
+                        color: textColor,
+                    })
+                ],
                 spacing: { before: 200, after: 200 },
             })
         );
         children.push(
             new Paragraph({
-                text: resumeData.basics.summary,
+                children: [
+                    new TextRun({
+                        text: resumeData.basics.summary,
+                        font: bodyFont.name,
+                        size: bodyFont.size,
+                        color: textColor,
+                    })
+                ],
                 spacing: { after: 400 },
             })
         );
@@ -152,8 +193,15 @@ const generateDocx = async (resumeData) => {
     if (resumeData.work && resumeData.work.length > 0) {
         children.push(
             new Paragraph({
-                text: 'Work Experience',
-                heading: HeadingLevel.HEADING_2,
+                children: [
+                    new TextRun({
+                        text: 'Work Experience',
+                        font: headingFont.name,
+                        size: headingFont.size,
+                        bold: true,
+                        color: textColor,
+                    })
+                ],
                 spacing: { before: 200, after: 200 },
             })
         );
@@ -165,10 +213,16 @@ const generateDocx = async (resumeData) => {
                     children: [
                         new TextRun({
                             text: job.position,
+                            font: bodyFont.name,
+                            size: bodyFont.size,
                             bold: true,
+                            color: textColor,
                         }),
                         new TextRun({
                             text: ` | ${formatDate(job.startDate)} - ${job.endDate ? formatDate(job.endDate) : 'Present'}`,
+                            font: bodyFont.name,
+                            size: bodyFont.size,
+                            color: textColor,
                         }),
                     ],
                     spacing: { before: index > 0 ? 300 : 0, after: 100 },
@@ -178,7 +232,14 @@ const generateDocx = async (resumeData) => {
             // Company name
             children.push(
                 new Paragraph({
-                    text: job.name,
+                    children: [
+                        new TextRun({
+                            text: job.name,
+                            font: bodyFont.name,
+                            size: bodyFont.size,
+                            color: textColor,
+                        })
+                    ],
                     spacing: { after: 100 },
                 })
             );
@@ -187,18 +248,32 @@ const generateDocx = async (resumeData) => {
             if (job.summary) {
                 children.push(
                     new Paragraph({
-                        text: job.summary,
+                        children: [
+                            new TextRun({
+                                text: job.summary,
+                                font: bodyFont.name,
+                                size: bodyFont.size,
+                                color: textColor,
+                            })
+                        ],
                         spacing: { after: 100 },
                     })
                 );
             }
 
-            // Highlights
+            // Highlights - using standard bullet points
             if (job.highlights && job.highlights.length > 0) {
                 job.highlights.forEach(highlight => {
                     children.push(
                         new Paragraph({
-                            text: highlight,
+                            children: [
+                                new TextRun({
+                                    text: highlight,
+                                    font: bodyFont.name,
+                                    size: bodyFont.size,
+                                    color: textColor,
+                                })
+                            ],
                             bullet: { level: 0 },
                             spacing: { after: 80 },
                         })
@@ -212,8 +287,15 @@ const generateDocx = async (resumeData) => {
     if (resumeData.education && resumeData.education.length > 0) {
         children.push(
             new Paragraph({
-                text: 'Education',
-                heading: HeadingLevel.HEADING_2,
+                children: [
+                    new TextRun({
+                        text: 'Education',
+                        font: headingFont.name,
+                        size: headingFont.size,
+                        bold: true,
+                        color: textColor,
+                    })
+                ],
                 spacing: { before: 400, after: 200 },
             })
         );
@@ -229,10 +311,16 @@ const generateDocx = async (resumeData) => {
                     children: [
                         new TextRun({
                             text: `${edu.studyType} in ${edu.area}`,
+                            font: bodyFont.name,
+                            size: bodyFont.size,
                             bold: true,
+                            color: textColor,
                         }),
                         new TextRun({
                             text: ` | ${getYear(edu.startDate)} - ${getYear(edu.endDate)}`,
+                            font: bodyFont.name,
+                            size: bodyFont.size,
+                            color: textColor,
                         }),
                     ],
                     spacing: { before: index > 0 ? 200 : 0, after: 100 },
@@ -241,19 +329,33 @@ const generateDocx = async (resumeData) => {
 
             children.push(
                 new Paragraph({
-                    text: edu.institution,
+                    children: [
+                        new TextRun({
+                            text: edu.institution,
+                            font: bodyFont.name,
+                            size: bodyFont.size,
+                            color: textColor,
+                        })
+                    ],
                     spacing: { after: 200 },
                 })
             );
         });
     }
 
-    // Skills Section
+    // Skills Section - single column
     if (resumeData.skills && resumeData.skills.length > 0) {
         children.push(
             new Paragraph({
-                text: 'Skills',
-                heading: HeadingLevel.HEADING_2,
+                children: [
+                    new TextRun({
+                        text: 'Skills',
+                        font: headingFont.name,
+                        size: headingFont.size,
+                        bold: true,
+                        color: textColor,
+                    })
+                ],
                 spacing: { before: 400, after: 200 },
             })
         );
@@ -264,10 +366,16 @@ const generateDocx = async (resumeData) => {
                     children: [
                         new TextRun({
                             text: skill.name + ': ',
+                            font: bodyFont.name,
+                            size: bodyFont.size,
                             bold: true,
+                            color: textColor,
                         }),
                         new TextRun({
                             text: skill.keywords.join(' • '),
+                            font: bodyFont.name,
+                            size: bodyFont.size,
+                            color: textColor,
                         }),
                     ],
                     spacing: { after: 150 },
